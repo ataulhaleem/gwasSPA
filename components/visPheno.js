@@ -3,8 +3,8 @@ import Papa from "papaparse";
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
-// import "plotly.js";
-import Plot from "react-plotly.js";
+import dynamic from 'next/dynamic'
+const Plot = dynamic(() => import("react-plotly.js"), { ssr: false, })
 
 
 
