@@ -5,6 +5,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import dynamic from 'next/dynamic'
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false, })
+import Button from '@mui/material/Button';
 
 
 
@@ -15,16 +16,30 @@ const allowedExtensions = ["csv"];
 const VisPheno = () => {
 	
 	// This state will store the parsed data
+	const [col_names, setColNames] = useState([]);
 	const [data, setData] = useState([]);
-	
+
 	// It state will contain the error when
 	// correct file extension is not used
 	const [error, setError] = useState("");
 	
 	// It will store the file uploaded by the user
 	const [file, setFile] = useState("");
-	const [selected_phenotype, setSelectedPhenotype] = useState('');
+	const [selectedXvar, setSelectedXvar] = useState([]);
+	const [selectedYvar, setSelectedYvar] = useState();
 	const [selected_plot_type, setSelectedPlotType] = useState('');
+	const [plot_input_data, setPlotIinputData] = useState([]);
+	const [plot_layout, setPlotLayout] = useState({});
+	
+	const handleX = (val) => {
+		setSelectedXvar(val);
+		console.log(selectedXvar);
+	}
+	// const handleY = (e) => {
+	// 	// setSelectedYvar(e.target.innerHTML);
+	// 	console.log(selectedYvar);
+	// }
+
 	const [x, setX] = useState([]);
 	const [y, setY] = useState([]);
 
@@ -65,19 +80,98 @@ const VisPheno = () => {
 		reader.onload = async ({ target }) => {
 			const csv = Papa.parse(target.result, { header: true });
 			const parsedData = csv?.data;
+			// console.log(parsedData);
+			setData(parsedData);
 
-		var x_data = [];
-		for(let i=0;i < 10;i++){
-        	x_data.push(parsedData[i][selected_phenotype]);
-			};
-	    setX(x_data);
       	const columns = Object.keys(parsedData[0]);
-				setData(columns);
+				setColNames(columns);
 			};
 		reader.readAsText(file);
 
+		// console.log(selectedXvar);
+		// console.log(selectedYvar);
+		// console.log(selected_plot_type);
+		// console.log(x);
+		// console.log(y);
    
-    
+	};
+	
+	useEffect(() => {
+		var x_data = [];
+		for(let i=0;i < data.length;i++){
+        	x_data.push(data[i][selectedXvar]);
+			};
+	    setX(x_data);
+
+		var y_data = [];
+		for(let i=0;i < data.length;i++){
+        	y_data.push(data[i][selectedYvar]);
+			};
+	    setY(y_data);
+	})
+
+	const handlePLOT = () => {
+		
+
+		if(selected_plot_type == 'Bar'){
+			var input_data=[{type : 'bar', x:x, y:y} ];
+			setPlotIinputData(input_data);
+			var new_layout = {
+				width: 800, 
+				height: 600,
+				yaxis: {
+					title: selectedYvar,
+					zeroline: false},
+				boxmode: 'group',
+				xaxis: {
+					title: selectedXvar},
+				title: 'Bar plot'}
+			setPlotLayout(new_layout); 
+
+		}else if(selected_plot_type == 'Line' ){
+			var input_data=[{type : 'line', x:x, y:y} ];
+			setPlotIinputData(input_data);
+			var new_layout = {
+				width: 800, 
+				height: 600,
+				yaxis: {
+					title: selectedYvar,
+					zeroline: false},
+				boxmode: 'group',
+				xaxis: {
+					title: selectedXvar},
+				title: 'Bar plot'}
+			setPlotLayout(new_layout); 
+
+
+		}else if(selected_plot_type == 'Box plot' ){
+			var input_data=[{type : 'box', x:x, name : selectedXvar},{type : 'box', x:y, name: selectedYvar} ];
+			setPlotIinputData(input_data);
+			var new_layout = {
+				width: 800, 
+				height: 600,
+				title: 'Box plot'}
+			setPlotLayout(new_layout); 
+
+
+		}else if(selected_plot_type == 'Scatter' ){
+			var input_data=[{type : 'scatter', mode: 'markers',x:x, y:y} ];
+			setPlotIinputData(input_data);
+			var new_layout = {
+				width: 800, 
+				height: 600,
+				yaxis: {
+					title: selectedYvar,
+					zeroline: false},
+				boxmode: 'group',
+				xaxis: {
+					title: selectedXvar},
+				title: 'Bar plot'}
+			setPlotLayout(new_layout); 
+
+
+		};
+		
 	};
 
 
@@ -85,7 +179,6 @@ const VisPheno = () => {
 
 		<div>
     	<Grid2 container spacing={1} columns={16} columnGap = {2}>
-
 			<label htmlFor="csvInput" style={{ display: "block" }}>
 				Enter CSV File
 			</label>
@@ -99,35 +192,34 @@ const VisPheno = () => {
 				<button onClick={handleParse}>Parse</button>
 			</div>
 
-		<Autocomplete
-			options={['Bar','Line', 'box', 'raincloud']}
-			sx={{ width: 300 }}
-			renderInput={(params) => <TextField {...params} label="choose plot type" />}
-			onInputChange = {(e) => setSelectedPlotType(e.target.innerHTML)}
-		/>
-      	<Autocomplete
-			options={data}
-			sx={{ width: 300 }}
-			renderInput={(params) => <TextField {...params} label="choose phenotype" />}
-			onInputChange = {(e) => setSelectedPhenotype(e.target.innerHTML)}
-		/>
+			<Autocomplete
+				options={['Bar','Line', 'Box plot', 'Scatter']}
+				sx={{ width: 300 }}
+				renderInput={(params) => <TextField {...params} label="choose plot type" />}
+				onInputChange = {(e) => setSelectedPlotType(e.target.innerHTML)}
+			/>
+			<Autocomplete
+				options={col_names}
+				sx={{ width: 300 }}
+				renderInput={(params) => <TextField {...params} label="choose x-variable" />}
+				onInputChange = {(e) => setSelectedXvar(e.target.innerHTML)}
+			/>
 
+			<Autocomplete
+				options={col_names}
+				sx={{ width: 300 }}
+				renderInput={(params) => <TextField {...params} label="choose y-variable" />}
+				onInputChange = {(e) => setSelectedYvar(e.target.innerHTML)}
+			/>
+
+			<Button variant="outlined" onClick={handlePLOT}>Plot</Button>
 
 		</Grid2>
     
-    <Plot
-    data={[
-      {
-        x: x,
-        y: x,
-        type: 'scatter',
-        mode: 'lines+markers',
-        marker: {color: 'red'},
-      },
-      {type: 'line', x: x, y: x},
-    ]}
-    layout={ {width: 800, height: 800, title: selected_phenotype} }
-    ></Plot>
+		<Plot 
+			data={plot_input_data}
+			layout={ plot_layout }
+		></Plot>
     
   </div>
 	);
