@@ -1,0 +1,18 @@
+{
+    "visPheno": {
+        "id" : 1,
+        "description" : "this is visPheno. Data visualization is the process of transforming data into a graphical representation. This allows data to be better understood at a glance and can help to uncover trends or patterns that might not be apparent from looking at data in tabular form"
+    },
+    "Fastqc": {
+        "id" : 1,
+        "description" : "this is Fastqc"
+    },
+    "LD_Analysis": {
+        "id" : 1,
+        "description" : "this is LD_Analysis"
+    },
+    "GWAS": {
+        "id" : 1,
+        "description" : "this is GWAS"
+    }
+}
