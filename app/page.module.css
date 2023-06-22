@@ -44,6 +44,8 @@
   grid-template-columns: repeat(3, minmax(33%, auto));
   width: var(--max-width);
   max-width: 100%;
+  padding: 50;
+
 }
 
 .card {
@@ -269,3 +271,4 @@
     transform: rotate(0deg);
   }
 }
+

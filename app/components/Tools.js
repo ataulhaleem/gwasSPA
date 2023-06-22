@@ -42,8 +42,7 @@ export function Tools() {
         title = 'GWAS' 
         description = 'Minecraft Dungeons is '
         />
-        <CardTemplate/>
-        <CardTemplate/>
+
 
     </Box>
     </>

@@ -34,6 +34,11 @@ export default function DataSelectionBar() {
     stream.on('error', function(err) { console.log(err) } )
     setInputFiles(objectsList);    
   }
+
+
+
+
+
   return (
     <Box
       sx={{
@@ -66,6 +71,7 @@ export default function DataSelectionBar() {
 				renderInput={(params) => <TextField {...params} label="data files" />}
 				onInputChange = {(e) => setChosenFile(e.target.value)}
 			/>
+      
     </Box>
   );
 }

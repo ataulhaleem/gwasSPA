@@ -18,7 +18,9 @@ export default function CardTemplate(props) {
 
 
   return (
-    <Card sx={{ maxWidth: 340, maxHeight : 300, p:1, width: 'auto' }}>
+    <UserContext.Provider value={{content, setContent}}>
+
+    <Card onClick={() => setContent(newContent)} sx={{ maxWidth: 340, maxHeight : 300, p:1, width: 'auto' }}>
       <CardActionArea>
         <CardMedia
           component="img"
@@ -37,22 +39,22 @@ export default function CardTemplate(props) {
       </CardActionArea>
       <CardActions>
 
-      <UserContext.Provider value={{content, setContent}}>
       <Link
           component="button"
           // variant="button"
           variant="body2"
-          onClick={() => {
-            setContent(newContent);
-          }}                                    
+          // onClick={() => {
+          //   setContent(newContent);
+          // }}                                    
         >
           Proceed to analysis page
       </Link>
-      </UserContext.Provider>
       
 
       </CardActions>
     </Card>
+    </UserContext.Provider>
+
   );
 }
 

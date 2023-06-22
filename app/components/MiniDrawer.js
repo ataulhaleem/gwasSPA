@@ -34,6 +34,11 @@ import { Contact } from './Contact';
 import { Analysis } from './Analysis';
 import { UserContext } from './contexts';
 import { useContext } from 'react';
+import SimpleSlider from "./Slider";
+
+
+import  WelcomePage  from "./WelcomePage";
+
 
 
 const drawerWidth = 240;
@@ -104,9 +109,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 export function MiniDrawer() {
+
+  const homePage = <WelcomePage/>;
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [content, setContent] = React.useState("This is the content section!");
+  const [content, setContent] = React.useState("Home Page");
   const [appBarTitle, setAppBarTitle] = React.useState("Genomics data Analysis workbench");
   // const [result, setResult] = React.useState(null);
 
@@ -133,6 +140,9 @@ export function MiniDrawer() {
       var newContent = <FAQs/>;
     }else if(e.target.id == 'Contact'){
       var newContent = <Contact/>;
+    }else if(e.target.id == 'Home'){
+      var newContent = <WelcomePage/>;
+
     } 
   setContent(newContent);
 }
@@ -150,12 +160,18 @@ export function MiniDrawer() {
       var newAppBarTitle = <h3>FAQs</h3>;
     }else if(e.target.id == 'Contact'){
       var newAppBarTitle = <h3>Contact</h3>;
+    }else if(e.target.id == 'Home'){
+      var newAppBarTitle = <h3>Home</h3>;
     }
     setAppBarTitle(newAppBarTitle);
   }
 
-  
+
+
+
+
   return (
+    <>
     <Box sx={{ display: 'flex' }}>
 
       <CssBaseline />
@@ -190,7 +206,7 @@ export function MiniDrawer() {
         {/* onClick={(e) => {handleDrawerContent(e); handleAppBarTitle(e);}} */}
         <List>
           {
-            ['Documentation', 'Data Management', 'Tools', 'Analysis', 'FAQs', 'Contact'].map((text, index) => (
+            ['Home','Documentation', 'Data Management', 'Tools', 'Analysis', 'FAQs', 'Contact'].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: 'block' }} >
              
               <ListItemButton id={text} sx={{ minHeight: 48, justifyContent: open ? 'initial' : 'center',px: 2.5, }} 
@@ -199,11 +215,13 @@ export function MiniDrawer() {
               
                   <ListItemIcon  sx={{minWidth: 0, mr: open ? 1 : 'auto', justifyContent: 'center' }}>
                     {index == 0 ? <TextSnippetIcon /> : ''}
-                    {index == 1 ? <StorageIcon /> : ''}
-                    {index == 2 ? <HandymanIcon /> : ''}
-                    {index == 3 ? <InsightsIcon /> : ''}
-                    {index == 4 ? <ContactSupportIcon /> : ''}
-                    {index == 5 ? <EmailIcon /> : ''}
+                    {index == 1 ? <TextSnippetIcon /> : ''}
+                    {index == 2 ? <StorageIcon /> : ''}
+                    {index == 3 ? <HandymanIcon /> : ''}
+                    {index == 4 ? <InsightsIcon /> : ''}
+                    {index == 5 ? <ContactSupportIcon /> : ''}
+                    {index == 6 ? <EmailIcon /> : ''}
+
                   </ListItemIcon>
                   
                   <ListItemText primary={text} sx={{ opacity: open ? 3 : 0 }} />
@@ -219,7 +237,11 @@ export function MiniDrawer() {
         <UserContext.Provider value={{content, setContent}}>
         <Box component="main" sx={{ flexGrow: 1, p: 3}}>
         <DrawerHeader/>
+          
         { content }
+
+
+
         </Box>
 
         </UserContext.Provider>
@@ -227,5 +249,14 @@ export function MiniDrawer() {
 
 
     </Box>
+
+
+    
+
+
+
+
+
+    </>
   );
 }
