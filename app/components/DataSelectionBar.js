@@ -29,14 +29,13 @@ export default function DataSelectionBar() {
     console.log(chosenProject);
     console.log(chosenDataType);
     const objectsList = [];
-    var stream = minioClient.listObjectsV2(chosenProject,chosenDataType, true,'')
-    stream.on('data', function(obj) { objectsList.push(obj.name) } )
-    stream.on('error', function(err) { console.log(err) } )
-    setInputFiles(objectsList);    
+    if(chosenProject != ''){
+      var stream = minioClient.listObjectsV2(chosenProject,chosenDataType, true,'')
+      stream.on('data', function(obj) { objectsList.push(obj.name) } )
+      stream.on('error', function(err) { console.log(err) } )
+      setInputFiles(objectsList);    
+    }
   }
-
-
-
 
 
   return (

@@ -113,9 +113,13 @@ export function MiniDrawer() {
   const homePage = <WelcomePage/>;
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [content, setContent] = React.useState("Home Page");
+  const [content, setContent] = React.useState(homePage);
   const [appBarTitle, setAppBarTitle] = React.useState("Genomics data Analysis workbench");
   // const [result, setResult] = React.useState(null);
+  
+  // const [tool, setTool] = React.useState("");
+  // const newTool = useContext(UserContext)
+
 
   const newContent = useContext(UserContext);
   

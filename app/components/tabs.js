@@ -7,7 +7,6 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import { Autocomplete, Button, Input, InputBase } from '@mui/material';
 import { TextField } from '@mui/material';
 import { minioClient, createProject, getMetadata,uploadFile } from 'minioClient/helper.js'
@@ -93,7 +92,7 @@ export default function FullWidthTabs(props) {
     })
 
  }
-
+ TabPanel
   const hadleSetMetaData = (projectName) => {
     // gets the meta data of existing projects
     // console.log(projectName);
@@ -104,8 +103,6 @@ export default function FullWidthTabs(props) {
      } )
 
   }
-
-
 
   return (
     <Box sx={{ bgcolor: 'background.paper' }}>
@@ -127,10 +124,6 @@ export default function FullWidthTabs(props) {
         index={value}
         onChangeIndex={handleChangeIndex}
       >
-
-
-
-
 
       {/* First tab */}
         <TabPanel value={value} index={0} dir={theme.direction}>

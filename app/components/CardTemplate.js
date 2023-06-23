@@ -7,15 +7,15 @@ import Typography from '@mui/material/Typography';
 import { CardActionArea, CardActions } from '@mui/material';
 // import Link from 'next/link';
 import { Link } from '@mui/material';
-import { UserContext } from './contexts';
+import { toolContext, UserContext } from './contexts';
 import { Analysis } from './Analysis';
 import { useContext } from 'react';
 
 
 export default function CardTemplate(props) {
-  var newContent = <Analysis/>;
+  var newContent = <Analysis tool={"GWAS"}/>;
   const {content, setContent} = useContext(UserContext);
-
+  // const {tool, setTool} = useContext(UserContext);
 
   return (
     <UserContext.Provider value={{content, setContent}}>
