@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { Autocomplete, Button, Input, InputBase } from '@mui/material';
 import { TextField } from '@mui/material';
-import { minioClient, createProject, getMetadata,uploadFile } from 'minioClient/helper.js'
+import { minioClient, createProject, getMetadata,uploadFile } from '/minioClient/helper.js'
 import Paper from '@mui/material/Paper';
 
 function TabPanel(props) {
@@ -92,7 +92,6 @@ export default function FullWidthTabs(props) {
     })
 
  }
- TabPanel
   const hadleSetMetaData = (projectName) => {
     // gets the meta data of existing projects
     // console.log(projectName);
@@ -127,8 +126,8 @@ export default function FullWidthTabs(props) {
 
       {/* First tab */}
         <TabPanel value={value} index={0} dir={theme.direction}>
-        <Typography variant = 'h4'> Creat New Project</Typography>
-        <p>This page describes the input data and the associated meta data. Here ....</p>
+          <Typography variant = 'h4'> Creat New Project</Typography>
+          <p>This page describes the input data and the associated meta data. Here ....</p>
 
           <Box
             component="form"

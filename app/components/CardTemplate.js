@@ -7,20 +7,25 @@ import Typography from '@mui/material/Typography';
 import { CardActionArea, CardActions } from '@mui/material';
 // import Link from 'next/link';
 import { Link } from '@mui/material';
-import { toolContext, UserContext } from './contexts';
+import { ToolsContext, UserContext } from './contexts';
 import { Analysis } from './Analysis';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 
 export default function CardTemplate(props) {
-  var newContent = <Analysis tool={"GWAS"}/>;
+  const [tool, setTool] = React.useState("");
+  const [analysisContent, setAnalysisContent] = useState(<Analysis tool = {tool}/>);
+
+
   const {content, setContent} = useContext(UserContext);
-  // const {tool, setTool} = useContext(UserContext);
 
   return (
+
+
     <UserContext.Provider value={{content, setContent}}>
 
-    <Card onClick={() => setContent(newContent)} sx={{ maxWidth: 340, maxHeight : 300, p:1, width: 'auto' }}>
+
+    <Card onClick={() => {setContent(<Analysis tool = {props.title}/>)}} sx={{ border:1, maxWidth: 340, maxHeight : 300, p:1, width: 'auto' }}>
       <CardActionArea>
         <CardMedia
           component="img"
@@ -28,14 +33,16 @@ export default function CardTemplate(props) {
           image= {props.myImage}
           alt="green iguana"
         />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-          {props.title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-          {props.description}
-          </Typography>
-        </CardContent>
+
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+            {props.title}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+            {props.description}
+            </Typography>
+          </CardContent>
+
       </CardActionArea>
       <CardActions>
 
@@ -47,14 +54,17 @@ export default function CardTemplate(props) {
           //   setContent(newContent);
           // }}                                    
         >
-          Proceed to analysis page
+          {/* Proceed to analysis page */}
       </Link>
       
 
       </CardActions>
     </Card>
+
     </UserContext.Provider>
+
 
   );
 }
 
+// idea : take the tool name + usage + analyze + replace usage with results

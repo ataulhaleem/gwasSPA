@@ -9,7 +9,7 @@ import IconTabs from './iconTabs'
 import TabPanel from './tabs'
 import { Typography } from '@mui/material';
 import { useState } from 'react';
-import { minioClient, createProject, listObjectsInFolder } from 'minioClient/helper.js'
+import { minioClient, createProject, listObjectsInFolder } from '/minioClient/helper.js'
 
 // var stream = minioClient.listObjectsV2('modem','', true,'');
 // stream.on('data', function(obj) { console.log(obj) } );

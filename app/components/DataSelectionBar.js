@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Autocomplete, formControlLabelClasses, TextField } from '@mui/material';
-import { minioClient, listObjectsInFolder } from 'minioClient/helper.js'
+import { minioClient, listObjectsInFolder } from '/minioClient/helper.js'
 import { 	  List, ListItem,ListItemText, ListItemButton, ListItemIcon } from  '@mui/material';
 
 var bucketList = [];

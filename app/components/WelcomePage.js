@@ -6,124 +6,10 @@ import { Typography } from '@mui/material';
 import CardTemplate from './CardTemplate';
 import './carousel.css'; // Import the custom CSS file
 
-
-
-// const images = [
-//   {
-//     label: 'San Francisco – Oakland Bay Bridge, United States',
-//     imgPath:
-//       'https://images.unsplash.com/photo-1537944434965-cf4679d1a598?auto=format&fit=crop&w=400&h=250&q=60',
-//   },
-//   {
-//     label: 'Bird',
-//     imgPath:
-//       'https://images.unsplash.com/photo-1538032746644-0212e812a9e7?auto=format&fit=crop&w=400&h=250&q=60',
-//   },
-//   {
-//     label: 'Bali, Indonesia',
-//     imgPath:
-//       'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=400&h=250',
-//   },
-//   {
-//     label: 'Goč, Serbia',
-//     imgPath:
-//       'https://images.unsplash.com/photo-1512341689857-198e7e2f3ca8?auto=format&fit=crop&w=400&h=250&q=60',
-//   },
-// ];
-
-
-// // const CarouselContainer = styled.div`
-// //   width: 100%;
-// //   margin: 0 auto;
-// // `;
-
-// // const CarouselItem = styled.div`
-// //   display: flex !important;
-// //   justify-content: space-between;
-// //   margin: 0 -10px;
-
-// //   > div {
-// //     flex: 0 0 33.33% !important;
-// //     margin: 0 10px;
-// //   }
-
-// //   @media (max-width: 768px) {
-// //     > div {
-// //       flex: 0 0 100% !important;
-// //     }
-// //   }
-// // `;
-
-
-// function WelcomePage() {
-//   return (
-//     <>
-
-//     <h1> Welcome to the Genomics data Analysis workbench</h1>
-
-//     <Carousel
-//       // showThumbs={false}
-//       // showStatus={false}
-//       showArrows
-//       infiniteLoop
-//       emulateTouch
-//       swipeable
-//       // className="carousel-container"
-//       renderIndicator={() => null} // Hide the default indicators
-//       // itemClass="carousel-item"
-//       autoPlay={true}
-  
-//       // height="50%"
-//       // width="100%"
-//       pauseOnHover={true}
-//       items="3"
-//     >
-//       {images.map((image, index) => (
-//         <div key={index}>
-//           <img src={image.imgPath} alt={image.label} />
-//           <p className="legend">{image.label}</p>
-//         </div>
-//       ))}
-//     </Carousel>
-//     </>
-//   );
-// }
-
-// export default WelcomePage;
-
-
-
-// // style = {
-// //   {  "width": "100%", 
-// //   "margin": "0 auto",}
-
-// // }
-// // .carousel-container {
-// //   width: 100%;
-// //   margin: 0 auto;
-
-// // }
-
-// // .carousel-item {
-// //   display: flex !important;
-// // }
-
-// // .carousel-item > div {
-// //   flex: 0 0 33.33% !important;
-// //   margin: 0 10px;
-// // }
-
-// // @media (max-width: 768px) {
-// //   .carousel-item > div {
-// //     flex: 0 0 100% !important;
-// //   }
-// // }
-
-
 import React from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import  Footer  from './Footer';
+// import  Footer  from './Footer';
 
 const components = [
   {
@@ -224,9 +110,9 @@ function WelcomePage() {
       <Typography align='center' color="blue" variant='h6'>< a href="https://www.fz-juelich.de/en/ibg/ibg-4/about-us">vist our home page</a></Typography>
     </div>
 
-    <div >
+    {/* <div >
       <Footer/>
-    </div>
+    </div> */}
 
 
 
