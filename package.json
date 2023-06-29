@@ -22,6 +22,7 @@
     "html-react-parser": "^4.0.0",
     "igv": "^2.13.11",
     "mdb-react-ui-kit": "^6.1.0",
+    "mdbreact": "^5.2.0",
     "minio": "^7.0.32",
     "next": "13.2.3",
     "papaparse": "^5.4.1",
