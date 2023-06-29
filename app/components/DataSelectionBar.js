@@ -26,8 +26,8 @@ export default function DataSelectionBar() {
   },[chosenProject,chosenDataType])
 
   const fetchObjects = async () => {
-    console.log(chosenProject);
-    console.log(chosenDataType);
+    // console.log(chosenProject);
+    // console.log(chosenDataType);
     const objectsList = [];
     if(chosenProject != ''){
       var stream = minioClient.listObjectsV2(chosenProject,chosenDataType, true,'')

@@ -1,4 +1,9 @@
+"use client"
 import React, { useEffect, useState} from "react";
+import { Suspense, lazy } from "react";
+// let MyPlot = lazy(() => import("~/components/plot"));
+
+
 import dynamic from 'next/dynamic'
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false, })
 import { linReg } from "./utils";
@@ -250,11 +255,13 @@ const PlotlyPlots = (props) => {
 
 	return (
         // plotNow || 
+        <Suspense fallback={<p>LOADING</p>}>
             <Plot 
                 sx = {{p:4,m:1}}
                 data={plotData}
                 layout={ plotLayout }
             />
+             </Suspense>
 	);
 };
 
