@@ -1,11 +1,15 @@
 "use client"
 import React, { useEffect, useState} from "react";
-import { Suspense, lazy } from "react";
+// import { Suspense, lazy } from "react";
 // let MyPlot = lazy(() => import("~/components/plot"));
 
 
+// var Plot = lazy(() => import("react-plotly.js"));
+
+// const Plot = require('react-plotly.js').default;
+
 import dynamic from 'next/dynamic'
-const Plot = dynamic(() => import("react-plotly.js"), { ssr: false, })
+const Plot = dynamic(() => require('react-plotly.js').default, { ssr: false, })
 import { linReg } from "./utils";
 
 
