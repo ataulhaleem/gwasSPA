@@ -1,5 +1,5 @@
 import React from 'react';
-import { MDBFooter, MDBContainer, MDBRow, MDBCol, MDBIcon } from 'mdb-react-ui-kit';
+import { MDBFooter, MDBContainer, MDBRow, MDBCol, MDBIcon } from 'mdbreact';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css'
 import "@fortawesome/fontawesome-free/css/all.min.css"
 
