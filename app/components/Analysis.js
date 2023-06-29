@@ -2,34 +2,8 @@
 "use client"
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import { Autocomplete, TextField } from '@mui/material'
-import { typographyVariant } from '@mui/system'
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import { Input, Button } from '@mui/material';
-import DataSelectionBar from './DataSelectionBar';
-
-import PropTypes from 'prop-types';
-import SwipeableViews from 'react-swipeable-views';
-import { useTheme } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Tabs from '@mui/material/Tabs';
-// import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
-import { InputBase } from '@mui/material';
-import { minioClient, createProject, getMetadata,uploadFile } from '/minioClient/helper.js'
-import Paper from '@mui/material/Paper';
-import { ToolsContext } from './contexts';
-import { useState, useEffect } from 'react';
-import documentation from '../components/documentation.json';
-import { useRef } from 'react';
-import Papa from "papaparse";
-import PlotlyPlots from './PlotlyPlots2';
-
-
+import { Button } from '@mui/material';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -37,19 +11,40 @@ import DialogActions from '@material-ui/core/DialogActions';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-
 import Tab from '@material-ui/core/Tab';
 import TabContext from '@material-ui/lab/TabContext';
 import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
 import Head from 'next/head';
 
+import { useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import { useState, useEffect } from 'react';
+import { useRef } from 'react';
+import Papa from "papaparse";
+import parse from 'html-react-parser';
+
+import PlotlyPlots from './PlotlyPlots2';
+import ManhattanPlot from '../components/ManhattanPlot'
+import DataSelectionBar from './DataSelectionBar';
+import { minioClient, createProject, getMetadata,uploadFile } from '/minioClient/helper.js'
+
+
+import publicPhenoDataSets from '/public/publicPhenoDataSets.json';
+import publicGwasDataSets from '/public/publicGwasDataSets.json';
+import documentation from '../components/documentation.json';
+
+
+var docs = Object.values(documentation)
+var pPhenoDataSets = Object.values(publicPhenoDataSets)
+var pGwasDataSets = Object.values(publicGwasDataSets)
+
 
 export function Analysis(props) {
-  const theme = useTheme();
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState("0");
   const tool = props.tool;
-  // console.log("This tool that i clicked is: ",tool)
 
   const [toolsUsage, setToolsUsage] = useState("")
   const inputFile = useRef(null)
@@ -65,15 +60,78 @@ export function Analysis(props) {
   const [open, setOpen] = useState(false);
   const [isToggled, setIsToggled] = useState(false);
   const [plotSchema, setPlotSchema] = useState({})
+  const [plotTitle, setPlotTitle] = useState("")
+  const [xLable, setXlable] = useState("")
+  const [yLable, setYlable] = useState("")
+
   const [state, setState] = useState({});
-  const [url, setUrl] = useState('https://raw.githubusercontent.com/ataulhaleem/dataVis/main/data/modemPhenoData.csv');
+  const [url, setUrl] = useState('');
 
 
 
+  const [plinkResults, setPlinkResults] = useState([]);
+  const [isToggledManhattan, setIsToggledManhattan] = useState(false);
+  // const [isGwasRunning, setIsGwasRunning] = useState(false);
+  const [gwasOnPubData, setGwasOnPubData] = useState(false)
 
+
+  /////////// hanlde Public Data Sets ////////////////////
+  const [publicDataSets, setPublicDataSets] = useState([])
+
+  const handlePublicDataSets = () => {
+    var publicdataSets = [];
+    if(tool=="VisPheno"){
+      pPhenoDataSets.map(item => {
+        publicdataSets.push(item.id)
+      })
+      setPublicDataSets(publicdataSets)
+    }else if(tool=="GWAS"){
+      pGwasDataSets.map(item => {
+        publicdataSets.push(item.id)
+      })
+      setPublicDataSets(publicdataSets)
+    }
+  }
+
+  const handleParse = () => {
+    fetch(url)
+      .then(res => res.blob()) // Gets the response and returns it as a blob
+      .then(blob => {
+      setFile(blob);
+        }
+      )
+		if (!file) return setError("Enter a valid file");
+		const reader = new FileReader();
+		reader.onload = async ({ target }) => {
+      if(tool != 'GWAS'){
+        const csv = Papa.parse(target.result, { header: true });
+        const parsedData = csv?.data;
+        setColNames(Object.keys(parsedData[0]));
+        setData(parsedData);
+
+      }else{
+        const gwaData = parseQassoc(target.result, ' ');
+        var filteredArray = gwaData.filter((obj) => obj['P'] !== 'NA');
+        setData(filteredArray);
+      }
+        };
+		reader.readAsText(file);
+	};
+
+  useEffect(() => {
+    handlePublicDataSets()
+    handleUsage()
+    handleParse()
+    if(tool == "GWAS"){
+      loadPlink();
+    }
+  }, [tool, url ])
 
   // perform GWAS
 
+  const handleGwasPublic = () => {
+    setGwasOnPubData(true)
+  }
   const loadPlink = () => {
     const initializeModule = async () => {
       await new Promise((resolve, reject) => {
@@ -88,8 +146,15 @@ export function Analysis(props) {
     };
     initializeModule();
   }
-
-  function parseSeparatedFile(fileContent, delimiter) {
+  function isSubsetOf(set, subset) {
+    for (let i = 0; i < set.length; i++) {
+        if (subset.indexOf(set[i]) == -1) {
+            return false;
+        }
+    }
+    return true;
+}
+  function parseQassoc(fileContent, delimiter) {
     const rows = fileContent.split('\n');
     const header = rows.shift().split(delimiter).filter((value) => value !== '');
     const resultArray = [];
@@ -111,6 +176,7 @@ export function Analysis(props) {
     return resultArray;
   }
   const handleGWAS = () => {
+    // setIsGwasRunning(true)
     const files = inputFile.current.files;
     window.Plink().then(Module => {
       const readers = [];
@@ -121,49 +187,32 @@ export function Analysis(props) {
           const fileContents = e.target.result;      
           // upLoadToBrowser(files[i].name, fileContents)
           Module.FS_createDataFile(
-          ".", // folder
-          files[i].name, // filename
+          "/", // folder
+          `plink.${files[i].name.split('.')[1]}`, // filename
           fileContents, // content
           true, // read
           true, // write
           );
-          Module.callMain(["--bfile", "UNT54", "--assoc", "--allow-no-sex" ])
-          console.log("Files After", Module.FS.readdir('.'))  
+          if(isSubsetOf(["plink.bim", "plink.fam", "plink.bed"], Module.FS.readdir('.'))){
+            Module.callMain(["--bfile", "plink", "--assoc", "--allow-no-sex" ])
+            var string = new TextDecoder().decode(Module.FS.readFile('/plink.qassoc'));
+            const multiArray = parseQassoc(string, ' ');
+            var filteredArray = multiArray.filter((obj) => obj['P'] !== 'NA');
+            setPlinkResults(filteredArray); 
+            setIsToggledManhattan(true)
+
+          }
+
+          // console.log("Files After", Module.FS.readdir('.')) 
+          // console.log("This is plink res: ",plinkResults)
+ 
         };
         reader.readAsBinaryString(files[i]);
+      
       }  
 
     })
-  // var runPlink = async() => {
-  //   const Module = await window.Plink();
-  //   console.log("Files Before", Module.FS.readdir('.'))
-  //   // console.log(inputFile.current.files)
-  //   const files = inputFile.current.files;
-  //   const readers = [];
-  //   for (let i = 0; i < files.length; i++) {
-  //     const reader = new FileReader();
-  //     readers.push(reader);
-  //     reader.onload = (e) => {
-  //       const fileContents = e.target.result;      
-  //       // upLoadToBrowser(files[i].name, fileContents)
-  //       Module.FS_createDataFile(
-  //       ".", // folder
-  //       files[i].name, // filename
-  //       fileContents, // content
-  //       true, // read
-  //       true, // write
-  //       );
-  //       Module.callMain(["--bfile", "UNT54", "--assoc", "--allow-no-sex" ])
-  //       console.log("Files After", Module.FS.readdir('.'))  
-
-  //     };
-  //     reader.readAsBinaryString(files[i]);
-  //   }  
-  // }
-  
-  // runPlink();
   }
-
 
   const handleStateChange = (event) => {
 		setState({
@@ -188,20 +237,17 @@ export function Analysis(props) {
   };
 
   // Tools usage
-  var docs = Object.values(documentation)
+
 
   const handleUsage = () => {
     {docs.map((key,index) => {
       if(docs[index].id === tool){
-        setToolsUsage(docs[index].description)
+        setToolsUsage(docs[index].usage)
       }
     })
     }
 
   }
-
-
-
 
   // setting up data public data sets
   const handleFileInputChange = () => {
@@ -219,39 +265,6 @@ export function Analysis(props) {
     }
   };
 
-	const handleParse2 = () => {
-    // setUrl('https://raw.githubusercontent.com/ataulhaleem/dataVis/main/data/Agri_traits.csv')
-    console.log(url)
-    fetch(url)
-      .then(res => res.blob()) // Gets the response and returns it as a blob
-      .then(blob => {
-      setFile(blob);
-        }
-      )
-	};
-
-  const handleParse = () => {
-		if (!file) return setError("Enter a valid file");
-		const reader = new FileReader();
-		reader.onload = async ({ target }) => {
-			const csv = Papa.parse(target.result, { header: true });
-			const parsedData = csv?.data;
-      console.log(parsedData)
-			setData(parsedData);
-      	const columns = Object.keys(parsedData[0]);
-				setColNames(columns);
-			};
-		reader.readAsText(file);
-	};
-
-
-
-  useEffect(() => {
-    handleUsage()
-    if(tool == "GWAS"){
-      loadPlink();
-    }
-  }, [tool])
 
 
   useEffect(() =>{
@@ -259,13 +272,21 @@ export function Analysis(props) {
       setOpen(true)
     }
     handlePLOT();
-  },[selected_plot_type, selectedXvar, selectedYvar])
+  },[selected_plot_type])
+
+  useEffect(() =>{
+    handlePLOT();
+  },[selectedXvar, selectedYvar, plotTitle, xLable, yLable])
+
 
   var handlePLOT = () =>{
     var  plotSchema = {
       inputData : data,
       ploty_type : '',
-      variablesToPlot : []
+      variablesToPlot : [],
+      plotTitle : plotTitle,
+      xLable : xLable,
+      yLable : yLable
     } 
     if(selected_plot_type === 'boxplot'){
       plotSchema.ploty_type = 'boxplot'
@@ -296,8 +317,6 @@ export function Analysis(props) {
 
   }
 
-  var publicDataSets = ['MODEM']
-
 
   return (
     <>
@@ -317,38 +336,52 @@ export function Analysis(props) {
       <Paper variant="outlined" >
         <Typography variant = 'h5'> Usage
           <Typography>  
-              {toolsUsage}
+              {parse(toolsUsage)}
           </Typography>
         </Typography>   
       </Paper>
 
 
-<Box sx={{ width: '100%', typography: 'body1' }}>
+    <Box sx={{ width: '100%', typography: 'body1' }}>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example">
-            <Tab label="Public Data" value="1" />
-            <Tab label="Project Data" value="2" />
-            <Tab label="Own Data" value="3" />
+            <Tab label="Public Data" value="0" />
+            <Tab label="Project Data" value="1" />
+            <Tab label="Own Data" value="2" />
           </TabList>
         </Box>
         {/* First tab */}
-        <TabPanel value="1">
+        <TabPanel value="0">
         <Grid container columns={3} columnGap = {2}>
             <Autocomplete
-                options={publicDataSets}
-                
+                options={publicDataSets}      
                 sx={{ width: 500 , marginTop:3}}
                 renderInput={(params) => <TextField {...params} label="Select Project Data" />}
-                onInputChange = {(e) => handleParse2(e.target.innerHTML)}
+                onInputChange = {(e,v) => {
+                                if(tool == "GWAS"){
+                                  pGwasDataSets.map(item => {
+                                    if(item.id == v){
+                                      setUrl(item.url)
+                                    }})
+                                }else if(tool == "VisPheno"){
+                                  pPhenoDataSets.map(item => {
+                                    if(item.id == v){
+                                      setUrl(item.url)
+                                    }})
+                                }
+              
+                              }
+                            }
               />
         </Grid>
+
         </TabPanel>
         {/* second tab */}
-        <TabPanel value="2">
+        <TabPanel value="1">
           <DataSelectionBar></DataSelectionBar>
         </TabPanel>
-        <TabPanel value="3">
+        <TabPanel value="2">
           <div>
             <Grid sx = {{ width: 500 , marginTop:2}} container columns={2} columnGap = {2}>  
               <Button sx = {{ width: 500 , marginTop:2}} onClick={handleButtonClick} variant="outlined" >
@@ -367,15 +400,13 @@ export function Analysis(props) {
       </TabContext>
     </Box>
 
-    
-
-
-
     </Box>
 
+    {/* handle Tools + corresponding pages */}
     <div style={{padding : 20}}>
-     {tool != "VisPheno" ? console.log('hello') : 
-          <div >  
+      {tool != "VisPheno" || 
+      
+        <div >  
           <Grid className="top-grid" container columns={3} columnGap = {2}>
             <Autocomplete
               options={['bar','line', 'histogram', 'boxplot', 'scatter', 'linReg','violin', 'raincloud']}
@@ -390,25 +421,28 @@ export function Analysis(props) {
               onInputChange = {(e) => setSelectedXvar(e.target.innerHTML)}
             />
             }
-          { selected_plot_type === 'histogram' | selected_plot_type === 'line' || 
+            { selected_plot_type == 'histogram' | selected_plot_type == 'line' || 
             <Autocomplete
               options={col_names}
               sx={{ width: 300 }}
               renderInput={(params) => <TextField {...params} label="choose y-variable" />}
               onInputChange = {(e) => setSelectedYvar(e.target.innerHTML)}
             />
-          }
+            }
             <Button variant="outlined" onClick={() => {setIsToggled(true)}}>Plot</Button>
-        </Grid>
-    
-    
-    
-        {!isToggled || 
-    
-          <PlotlyPlots plotSchema = {plotSchema} />
-    
-        }
-    
+          </Grid>
+          
+
+          <Grid sx = {{marginTop:2}} className="top-grid" container columns={3} columnGap = {2}>
+            <TextField sx={{ width: 300 }} onChange={(e) => {setPlotTitle(e.target.value)}} label="Update  plot title" ></TextField>
+            <TextField sx={{ width: 300 }} onChange={(e) => {setXlable(e.target.value)}} label="Update  x label " ></TextField>
+            <TextField sx={{ width: 300 }} onChange={(e) => {setYlable(e.target.value)}} label="Update  y label " ></TextField>
+          </Grid>
+          
+          {!isToggled || 
+            <PlotlyPlots plotSchema = {plotSchema} />
+          }
+  
           <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Select Box Plots</DialogTitle>
             <DialogContent >
@@ -425,36 +459,38 @@ export function Analysis(props) {
               </Button>
             </DialogActions>
           </Dialog>
-            
         </div>
-     }
+      }
 
-    {tool != "GWAS" ? console.log('hello') : 
-      <div padding={2}> 
-      <Typography variant='h5' > Genome wide Association Analysis (GWAS)</Typography> 
+      {tool != "GWAS" ||
+        <div padding={2}> 
+          <Typography variant='h5' > Genome wide Association Analysis (GWAS)</Typography> 
 
-      <Grid sx = {{marginTop:2}} container columns={3} columnGap = {2}>
-      <Button variant = 'contained' onClick={handleGWAS} color="primary">
-                run Plink
-              </Button>
-      <Button variant = 'contained' onClick={handleGWAS} color="primary">
-                Manhattan Plot
-              </Button>
+          <Grid sx = {{marginTop:2}} container columns={3} columnGap = {2}>
 
-      </Grid>
-      </div>
+          <Button variant = 'contained' onClick={() => {handleGwasPublic();}} color="primary">
+              Plot public data
+            </Button>
 
 
+            <Button variant = 'contained' onClick={() => {handleGWAS();}} color="primary">
+              Run GWAS Tool
+            </Button>
 
+ 
+          </Grid>
+          
+          {/* {isGwasRunning ? <h1>Gwas is running </h1> : console.log('press run gwas')}  */}
+          {  !isToggledManhattan  || <ManhattanPlot inputArray = {plinkResults}/> }
 
-     }
+          {  !gwasOnPubData || <ManhattanPlot inputArray = {data}/> }
+        </div>
+      }
     </div>
 
     <Head>
         <script src="/wasm/plink.js" /> {/* Add the script tag to the head */}
-      </Head>
-
-
+    </Head>
 
     </>
   );

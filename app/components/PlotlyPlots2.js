@@ -30,6 +30,14 @@ const PlotlyPlots = (props) => {
     var plotyType = props.plotSchema.ploty_type;
     var inputData = props.plotSchema.inputData;
     var selectedVars = props.plotSchema.variablesToPlot;
+    var plotTitle = props.plotSchema.plotTitle;
+    var xLable = props.plotSchema.xLable;
+    var yLable = props.plotSchema.yLable;
+
+    // const [xLable, setXlable] = 
+
+
+    primaryLaout["title"] = plotTitle;
 
     const [plotData, setPlotData] = useState([]);
     const [plotLayout, setPlotLayout] = useState({});
@@ -62,9 +70,11 @@ const PlotlyPlots = (props) => {
             var plotLayout = primaryLaout;
             plotLayout['xaxis'] = {}
             plotLayout['yaxis'] = {}
-            plotLayout.xaxis['title'] = x
-            plotLayout.yaxis['title'] = y
+            plotLayout.xaxis['title'] = xLable
+            plotLayout.yaxis['title'] = yLable
             plotLayout['boxmode'] = 'group'
+            plotLayout.showlegend = false
+
 
     
         }else if(plotyType == 'line' ){
@@ -72,25 +82,27 @@ const PlotlyPlots = (props) => {
             var plotLayout = primaryLaout;
             plotLayout['xaxis'] = {}
             plotLayout['yaxis'] = {}
-            plotLayout.xaxis['title'] = x
-            plotLayout.yaxis['title'] = y
+            plotLayout.xaxis['title'] = xLable
+            plotLayout.yaxis['title'] = yLable
             // console.log('modify it for many variables')
     
         }else if(plotyType == 'histogram' ){
             var plotData=[{type : 'histogram', x:xdata} ];
             var plotLayout = primaryLaout;
             plotLayout['xaxis'] = {}
-            plotLayout.xaxis['title'] = x
+            plotLayout.xaxis['title'] = xLable
             plotLayout['yaxis'] = {}
-            plotLayout.yaxis['title'] = ''
+            plotLayout.yaxis['title'] = yLable
+            plotLayout.showlegend = false
+
 
         }else if(plotyType == 'scatter' ){
                 var plotData=[{type : 'scattergl', mode: 'markers',x:xdata, y:ydata} ];
                 var plotLayout = primaryLaout;
                 plotLayout['xaxis'] = {}
                 plotLayout['yaxis'] = {}
-                plotLayout.xaxis['title'] = x
-                plotLayout.yaxis['title'] = y
+                plotLayout.xaxis['title'] = xLable
+                plotLayout.yaxis['title'] = yLable
     
         }else if(plotyType == 'boxplot' ){
             var input_Obj = {};
