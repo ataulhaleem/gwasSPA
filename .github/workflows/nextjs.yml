@@ -49,7 +49,7 @@ jobs:
             exit 1
           fi
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
           node-version: "16"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
@@ -73,23 +73,22 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock') }}-
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
-      - name: Build with Next.js
-        run: ${{ steps.detect-package-manager.outputs.runner }} next build
-      - name: Static HTML export with Next.js
-        run: ${{ steps.detect-package-manager.outputs.runner }} next export
+      - name: Build and export with Next.js
+        run: npx next export
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         with:
+          name: pages
           path: ./out
 
   # Deployment job
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+- name: Deploy to GitHub Pages
+  id: deployment
+  uses: peaceiris/actions-gh-pages@v3
+  with:
+    deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+    publish_dir: ./out
+    publish_branch: gh-pages
+    cname: your-custom-domain.com # If you have a custom domain, specify it here
+    allow_empty_commit: true
+    commit_message: Deploy ${{ github.sha }}
